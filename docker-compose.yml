@@ -1,0 +1,49 @@
+services:
+  db:
+    image: mysql:8.4.2
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+    volumes:
+      - ./db/init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork  # Conectando a la misma red
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api
+    environment:
+      MYSQL_DATABASE_USER: testuser
+      MYSQL_DATABASE_PASSWORD: testpassword
+      MYSQL_DATABASE_DB: testdb
+      MYSQL_DATABASE_HOST: db
+      MYSQL_DATABASE_PORT: 3306
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - mynetwork
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: web
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - mynetwork  # Conectando a la misma red
+
+networks:
+  mynetwork:
+    driver: bridge  # La red bridge es el tipo predeterminado
