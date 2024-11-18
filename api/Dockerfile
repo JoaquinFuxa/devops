@@ -1,16 +1,6 @@
 # Usar una imagen base de Python
 FROM python:3-alpine
 
-# Instala las dependencias necesarias usando apk en lugar de apt-get
-RUN apk update && apk add --no-cache \
-    wget \
-    && rm -rf /var/cache/apk/*
-
-# Descarga dockerize
-RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz \
-    && tar -xvzf dockerize-linux-amd64-v0.6.1.tar.gz \
-    && mv dockerize /usr/local/bin/
-    
 # Establecer el directorio de trabajo
 WORKDIR /app
 
@@ -25,4 +15,4 @@ COPY . .
 EXPOSE 5000
 
 # Establece el comando para esperar por MySQL antes de iniciar la app
-CMD ["dockerize", "-wait", "tcp://db:3306", "-timeout", "60s", "python", "main.py"]
+CMD ["python", "main.py"]
